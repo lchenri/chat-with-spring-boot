@@ -114,5 +114,32 @@ function getAvatarColor(messageSender) {
     return colors[index];
 }
 
+function sendFile(event) {
+    if (fileInput.files.length > 0 && stompClient) {
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+        
+        reader.onload = function(e) {
+            var fileContent = e.target.result;
+            var chatMessage = {
+                sender: username,
+                content: fileContent,
+                type: 'FILE'
+            };
+            stompClient.send("/app/chat.sendFile", {}, JSON.stringify(chatMessage));
+            fileInput.value = '';
+        };
+
+        reader.readAsDataURL(file);
+    }
+    event.preventDefault();
+}
+
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
+
+document.getElementById('file-button').addEventListener('click', function() {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', sendFile);

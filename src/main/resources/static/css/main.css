@@ -21,18 +21,11 @@ body {
     height: 100%;
 }
 
-.clearfix:after {
-    display: block;
-    content: "";
-    clear: both;
-}
-
 .hidden {
     display: none;
 }
 
 .form-control {
-    width: 100%;
     min-height: 38px;
     font-size: 15px;
     border: 1px solid #c8c8c8;
@@ -45,6 +38,14 @@ body {
 input {
     padding-left: 10px;
     outline: none;
+}
+
+.input-text-block {
+    flex-grow: 1;
+}
+
+.input-group {
+    display: flex;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -209,12 +210,10 @@ button.accent {
 
 #messageForm .input-group input {
     float: left;
-    width: calc(100% - 85px);
 }
 
 #messageForm .input-group button {
     float: left;
-    width: 80px;
     height: 38px;
     margin-left: 5px;
 }
@@ -263,14 +262,6 @@ button.accent {
 
     #chat-page ul {
         height: calc(100% - 120px);
-    }
-
-    #messageForm .input-group button {
-        width: 65px;
-    }
-
-    #messageForm .input-group input {
-        width: calc(100% - 70px);
     }
 
     .chat-header {

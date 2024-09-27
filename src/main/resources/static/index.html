@@ -34,8 +34,10 @@
     <form id="messageForm" name="messageForm">
       <div class="form-group">
         <div class="input-group clearfix">
-          <input type="text" id="message" placeholder="Digite uma mensagem..." autocomplete="off" class="form-control"/>
+          <input type="text" id="message" placeholder="Digite uma mensagem..." autocomplete="off" class="form-control input-text-block"/>
           <button type="submit" class="primary">Enviar</button>
+          <input type="file" id="fileInput" class="form-control" style="display: none;"/>
+          <button type="button" class="accent" id="file-button">Enviar Arquivo</button>
         </div>
       </div>
     </form>
