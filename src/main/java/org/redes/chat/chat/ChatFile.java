@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChatImage {
+public class ChatFile {
     private String nomearquivo;
     private String arquivo;
 }

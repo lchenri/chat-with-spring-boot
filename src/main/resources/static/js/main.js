@@ -143,12 +143,13 @@ function sendFile(event) {
                 return response.json();
             })
             .then(data => {
+                console.log(data);
                 var chatMessage = {
                     sender: username,
-                    content: `Arquivo enviado: ${data.filePath}`,
+                    content: `Arquivo enviado: ${data.message}`,
                     type: 'FILE'
                 };
-                stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+                stompClient.send("/app/chat.sendFile", {}, JSON.stringify(chatMessage));
             })
             .catch(error => {
                 console.error('Erro ao enviar o arquivo:', error);
