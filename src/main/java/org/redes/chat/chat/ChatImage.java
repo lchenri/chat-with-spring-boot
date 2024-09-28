@@ -8,5 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ChatImage {
-    private String fileContent;
+    private String nomearquivo;
+    private String arquivo;
 }
