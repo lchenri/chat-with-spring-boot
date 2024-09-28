@@ -119,8 +119,10 @@ function sendFile(event) {
         var file = fileInput.files[0];
         var formData = new FormData();
         formData.append('file', file);
+
+        console.log(formData);
         
-        fetch('/app/chat.sendFile', {
+        fetch('/chat.sendFile', {
             method: 'POST',
             body: formData
         })
