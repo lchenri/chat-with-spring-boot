@@ -25,7 +25,7 @@ public class ChatController {
     }
 
     @PostMapping("/chat.sendFile")
-    public void receiveFile(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+    public void receiveFile(ChatImage chatImage){
         System.out.println("teste pra ver se chega aqui");
     }
 
