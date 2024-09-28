@@ -115,25 +115,38 @@ function getAvatarColor(messageSender) {
 }
 
 function sendFile(event) {
-    if (fileInput.files.length > 0 && stompClient) {
+    if (fileInput.files.length > 0) {
         var file = fileInput.files[0];
-        var reader = new FileReader();
+        var formData = new FormData();
+        formData.append('file', file);
         
-        reader.onload = function(e) {
-            var fileContent = e.target.result;
+        fetch('/app/chat.sendFile', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao enviar o arquivo');
+            }
+            return response.json();
+        })
+        .then(data => {
             var chatMessage = {
                 sender: username,
-                content: fileContent,
+                content: `Arquivo enviado: ${data.filePath}`,
                 type: 'FILE'
             };
-            stompClient.send("/app/chat.sendFile", {}, JSON.stringify(chatMessage));
-            fileInput.value = '';
-        };
+            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        })
+        .catch(error => {
+            console.error('Erro ao enviar o arquivo:', error);
+        });
 
-        reader.readAsDataURL(file);
+        fileInput.value = '';
     }
     event.preventDefault();
 }
+
 
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
