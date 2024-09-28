@@ -95,8 +95,7 @@ function onMessageReceived(payload) {
     }
 
     var textElement = document.createElement('p');
-    var messageText = document.createTextNode(message.content);
-    textElement.appendChild(messageText);
+    textElement.innerHTML += message.content;
 
     messageElement.appendChild(textElement);
 
@@ -146,10 +145,10 @@ function sendFile(event) {
                 console.log(data);
                 var chatMessage = {
                     sender: username,
-                    content: `Arquivo enviado: ${data.filepath}`,
-                    type: 'FILE'
+                    content: `Arquivo enviado: <a href="${data.filePath}">Clique para Download</a>`,
+                    type: 'CHAT'
                 };
-                stompClient.send("/app/chat.sendFile", {}, JSON.stringify(chatMessage));
+                stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
             })
             .catch(error => {
                 console.error('Erro ao enviar o arquivo:', error);

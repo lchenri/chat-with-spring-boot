@@ -2,10 +2,8 @@ package org.redes.chat.chat;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
 
 import org.springframework.core.io.InputStreamResource;
@@ -47,22 +45,31 @@ public class ChatController {
         }
 
         try {
+            String fileName = chatFile.getNomearquivo();
+            String filePath = "src/main/resources/static/files/" + fileName;
+
             byte[] fileData = Base64.getDecoder().decode(chatFile.getArquivo());
 
-            Path path = Paths.get("static/files/" + chatFile.getNomearquivo());
+            try (FileOutputStream fos = new FileOutputStream(new File(filePath))) {
+                fos.write(fileData);
+                fos.flush();
+            }
 
-            Files.write(path, fileData);
-
-            String filePath = "http://localhost:8080/files/" + chatFile.getNomearquivo();
-
-            ResponseFile responseFile = new ResponseFile("Arquivo recebido com sucesso", true, filePath );
+            String serverPath = "http://localhost:8080/files/" + fileName;
+ 
+            ResponseFile responseFile = new ResponseFile("Arquivo recebido com sucesso", true, serverPath);
             return ResponseEntity.ok(responseFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ResponseFile responseFile = new ResponseFile("Erro ao salvar o arquivo: " + e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseFile);
         } catch (Exception e) {
             e.printStackTrace();
             ResponseFile responseFile = new ResponseFile("Erro ao salvar o arquivo: " + e.getMessage(), false);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseFile);
         }
     }
+
 
     @MessageMapping("/chat.sendFile")
     @SendTo("/topic/public")
