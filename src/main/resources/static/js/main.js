@@ -116,40 +116,51 @@ function getAvatarColor(messageSender) {
 
 function sendFile(event) {
     if (fileInput.files.length > 0) {
-        var file = fileInput.files[0].name;
-        console.log(file);
-        var formData = new FormData();
-        formData.append('file', file);
+        const file = fileInput.files[0];
+        const reader = new FileReader();
 
-        console.log(formData);
-        
-        fetch('/chat.sendFile', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao enviar o arquivo');
-            }
-            return response.json();
-        })
-        .then(data => {
-            var chatMessage = {
-                sender: username,
-                content: `Arquivo enviado: ${data.filePath}`,
-                type: 'FILE'
+        reader.onload = function(e) {
+            const base64String = e.target.result.split(',')[1];
+            
+            const data = {
+                nomearquivo: file.name,
+                arquivo: base64String
             };
-            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
-        })
-        .catch(error => {
-            console.error('Erro ao enviar o arquivo:', error);
-        });
 
-        fileInput.value = '';
+            console.log(data);
+
+            fetch('/chat.sendFile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar o arquivo');
+                }
+                return response.json();
+            })
+            .then(data => {
+                var chatMessage = {
+                    sender: username,
+                    content: `Arquivo enviado: ${data.filePath}`,
+                    type: 'FILE'
+                };
+                stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+            })
+            .catch(error => {
+                console.error('Erro ao enviar o arquivo:', error);
+            });
+
+            fileInput.value = '';
+        };
+
+        reader.readAsDataURL(file);
     }
     event.preventDefault();
 }
-
 
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
