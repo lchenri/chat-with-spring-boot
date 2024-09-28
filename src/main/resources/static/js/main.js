@@ -146,7 +146,7 @@ function sendFile(event) {
                 console.log(data);
                 var chatMessage = {
                     sender: username,
-                    content: `Arquivo enviado: ${data.message}`,
+                    content: `Arquivo enviado: ${data.filepath}`,
                     type: 'FILE'
                 };
                 stompClient.send("/app/chat.sendFile", {}, JSON.stringify(chatMessage));
