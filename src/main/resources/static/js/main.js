@@ -116,12 +116,12 @@ function getAvatarColor(messageSender) {
 
 function sendFile(event) {
     if (fileInput.files.length > 0) {
-        var file = fileInput.files[0].name;
+        var file = fileInput.files[0];
         console.log(file);
         var formData = new FormData();
         formData.append('file', file);
 
-        console.log(formData);
+        console.log([...formData]);
         
         fetch('/chat.sendFile', {
             method: 'POST',
