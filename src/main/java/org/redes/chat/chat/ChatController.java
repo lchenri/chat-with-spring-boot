@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -21,19 +23,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Controller
 public class ChatController {
+
+    private Map<String, String> publicKeys = new HashMap<>();
+
+    @MessageMapping("/chat.addUser")
+    @SendTo("/topic/public")
+    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) throws JsonProcessingException {
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        publicKeys.put(chatMessage.getSender(), chatMessage.getContent());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String publicKeysJson = objectMapper.writeValueAsString(publicKeys);
+
+        ChatMessage joinMessage = new ChatMessage();
+        joinMessage.setType(MessageType.JOIN);
+        joinMessage.setSender(chatMessage.getSender());
+        joinMessage.setContent(publicKeysJson);
+ 
+        return joinMessage;
+    }
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage){
-        return chatMessage;
-    }
-
-    @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         return chatMessage;
     }
 
@@ -68,14 +85,6 @@ public class ChatController {
             ResponseFile responseFile = new ResponseFile("Erro ao salvar o arquivo: " + e.getMessage(), false);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseFile);
         }
-    }
-
-
-    @MessageMapping("/chat.sendFile")
-    @SendTo("/topic/public")
-    public ChatMessage sendFile(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        return chatMessage;
     }
 
     @GetMapping("/files/{filename}")
